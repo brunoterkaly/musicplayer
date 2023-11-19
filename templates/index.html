@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hack Song Player</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <style>
+        body {
+            font-family: 'Calibri', 'Aptos', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bruno's Hack Song Player</h1>
+    <div class="form-group">
+        <input type="text" id="searchBox" class="form-control" placeholder="Search for a song...">
+    </div>
+    <ul id="mp3List">
+        {% for file in files %}
+            {% set mp3_path = file %}
+            <li>
+                <a href="/play{{ mp3_path }}" class="song-link">
+                    {{ mp3_path.split('/')[-1] }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <script>
+$(document).ready(function(){
+    // Retrieve the search query from sessionStorage
+    var searchQuery = sessionStorage.getItem('searchQuery');
+    if (searchQuery) {
+        $("#searchBox").val(searchQuery);
+        filterSongs(searchQuery);
+    }
+
+    // Listen for changes in the search input
+    $("#searchBox").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        filterSongs(value);
+
+        // Store the search query in sessionStorage
+        sessionStorage.setItem('searchQuery', value);
+    });
+
+    // Function to filter songs based on the search query
+    function filterSongs(query) {
+        $("#mp3List li").each(function() {
+            var songLink = $(this).find('.song-link');
+            var songName = songLink.text().toLowerCase();
+            if (songName.indexOf(query) > -1) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    }
+});
+
+    </script>
+</body>
+</html>
