@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Hack Song Player</title>
+    <title>Bruno's Hack Song Player</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <style>
@@ -15,49 +15,41 @@
     <div class="form-group">
         <input type="text" id="searchBox" class="form-control" placeholder="Search for a song...">
     </div>
-    <ul id="mp3List">
-        {% for file in files %}
-            {% set mp3_path = file %}
-            <li>
-                <a href="/play{{ mp3_path }}" class="song-link">
-                    {{ mp3_path.split('/')[-1] }}
-                </a>
-            </li>
+    <form id="playlistForm">
+        {% for file, song_name in files %}
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="{{ file }}" id="{{ file }}">
+                <label class="form-check-label" for="{{ file }}">
+                    {{ song_name }} ({{ file }})
+                </label>
+            </div>
         {% endfor %}
-    </ul>
-
+        <button type="submit" class="btn btn-primary mt-3">Create Playlist</button>
+    </form>
     <script>
-$(document).ready(function(){
-    // Retrieve the search query from sessionStorage
-    var searchQuery = sessionStorage.getItem('searchQuery');
-    if (searchQuery) {
-        $("#searchBox").val(searchQuery);
-        filterSongs(searchQuery);
-    }
-
-    // Listen for changes in the search input
-    $("#searchBox").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        filterSongs(value);
-
-        // Store the search query in sessionStorage
-        sessionStorage.setItem('searchQuery', value);
-    });
-
-    // Function to filter songs based on the search query
-    function filterSongs(query) {
-        $("#mp3List li").each(function() {
-            var songLink = $(this).find('.song-link');
-            var songName = songLink.text().toLowerCase();
-            if (songName.indexOf(query) > -1) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
+        $(document).ready(function() {
+            $('#playlistForm').submit(function(event) {
+                event.preventDefault();
+                var selectedSongs = [];
+                $('#playlistForm input:checked').each(function() {
+                    selectedSongs.push($(this).val());
+                });
+        
+                $.ajax({
+                    type: "POST",
+                    url: "/create_playlist",
+                    contentType: "application/json",
+                    data: JSON.stringify(selectedSongs),
+                    success: function(response) {
+                        alert('Playlist created successfully!');
+                        // Add more response handling as needed
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            });
         });
-    }
-});
-
     </script>
 </body>
 </html>
