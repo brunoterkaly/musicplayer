@@ -16,11 +16,11 @@
         <input type="text" id="searchBox" class="form-control" placeholder="Search for a song...">
     </div>
     <form id="playlistForm">
-        {% for file, song_name in files %}
+        {% for full_path, song_name in files %}
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="{{ file }}" id="{{ file }}">
-                <label class="form-check-label" for="{{ file }}">
-                    {{ song_name }} ({{ file }})
+                <input class="form-check-input" type="checkbox" value="{{ full_path }}" id="{{ full_path }}">
+                <label class="form-check-label" for="{{ full_path }}">
+                    {{ song_name }}
                 </label>
             </div>
         {% endfor %}
