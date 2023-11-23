@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Bruno's Hack Song Player</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <style>
+    <head>
+        <title>Bruno's Hack Song Player</title>
+        <link rel="stylesheet"
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <style>
         body {
             font-family: 'Calibri', 'Aptos', sans-serif;
         }
@@ -36,40 +37,61 @@
             width: 100%; /* Ensure label fills the space after checkbox */
         }
     </style>
-</head>
-<body>
-    <h1>Bruno's Hack Song Player</h1>
-    <div class="form-group">
-        <input type="text" id="searchBox" class="form-control" placeholder="Search for a song...">
-    </div>
-    <form id="playlistForm" class="container">
-        <button type="submit" class="btn btn-primary mt-3 mb-3">Create Playlist</button>
-        <div class="playlist-container">
-            <!-- Single column table structure -->
-            {% for full_path, song_name in files %}
-            <div class="playlist-row">
-              <div class="playlist-cell">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="{{ full_path }}" id="{{ full_path }}">
-                  <label class="form-check-label" for="{{ full_path }}">
-                    {{ song_name }}
-                  </label>
-                </div>
-              </div>
-            </div>
-            {% endfor %}
+    </head>
+    <body>
+        <h1>Bruno's Hack Song Player</h1>
+        <div class="form-group">
+            <input type="text" id="searchBox" class="form-control"
+                placeholder="Search for a song...">
         </div>
-    </form>
-    <script>
+        <form id="playlistForm" class="container">
+            <button type="submit" class="btn btn-primary mt-3 mb-3">Create
+                Playlist</button>
+            <div class="playlist-container">
+                <!-- Single column table structure -->
+                {% for full_path, song_name in files %}
+                <div class="playlist-row">
+                    <div class="playlist-cell">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                value="{{ full_path }}" id="{{ full_path }}">
+                            <label class="form-check-label"
+                                for="{{ full_path }}">
+                                {{ song_name }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </form>
+        <script>
         $(document).ready(function() {
-            // Search functionality
-            $("#searchBox").on("keyup", function() {
-                var value = $(this).val().toLowerCase();
-                $(".playlist-row").filter(function() {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-                });
+            // Indexing songs
+            var songIndex = {};
+            $(".playlist-row").each(function() {
+                var songName = $(this).find(".form-check-label").text().trim().toLowerCase();
+                if (!songIndex[songName]) {
+                    songIndex[songName] = [];
+                }
+                songIndex[songName].push($(this));
             });
 
+            // Improved search functionality
+            $("#searchBox").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+
+                // Filter function for wildcard search
+                $(".playlist-row").filter(function() {
+                    var songName = $(this).find(".form-check-label").text().toLowerCase();
+                    return songName.includes(value);
+                }).show(); // Show the rows that match the condition
+
+                $(".playlist-row").filter(function() {
+                    var songName = $(this).find(".form-check-label").text().toLowerCase();
+                    return !songName.includes(value);
+                }).hide(); // Hide the rows that do not match the condition
+            });
             // Playlist form submission
             $('#playlistForm').submit(function(event) {
                 event.preventDefault();
@@ -94,5 +116,5 @@
             });
         });
     </script>
-</body>
+    </body>
 </html>
