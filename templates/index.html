@@ -8,6 +8,33 @@
         body {
             font-family: 'Calibri', 'Aptos', sans-serif;
         }
+        .playlist-container {
+            border: 1px solid #ccc; /* Outer border for the table */
+        }
+        .playlist-row {
+            border-bottom: 1px solid #ccc; /* Bottom border for each row */
+        }
+        .playlist-row:nth-child(even) {
+            background-color: #f0f8ff; /* Light blue background for even rows */
+        }
+        .playlist-cell {
+            padding: 8px; /* Padding for content within the cells */
+            display: flex; /* Use flexbox for alignment */
+            align-items: center; /* Align items vertically */
+        }
+        .form-check {
+            width: 100%; /* Make the form-check fill the cell */
+            display: flex; /* Use flex to align items */
+            align-items: center; /* Align items vertically */
+            justify-content: flex-start; /* Align content to the start */
+        }
+        .form-check-input {
+            margin-right: 10px; /* Space between the checkbox and the song name */
+        }
+        .form-check-label {
+            text-align: left; /* Align text to the left */
+            width: 100%; /* Ensure label fills the space after checkbox */
+        }
     </style>
 </head>
 <body>
@@ -15,19 +42,35 @@
     <div class="form-group">
         <input type="text" id="searchBox" class="form-control" placeholder="Search for a song...">
     </div>
-    <form id="playlistForm">
-        {% for full_path, song_name in files %}
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="{{ full_path }}" id="{{ full_path }}">
-                <label class="form-check-label" for="{{ full_path }}">
+    <form id="playlistForm" class="container">
+        <button type="submit" class="btn btn-primary mt-3 mb-3">Create Playlist</button>
+        <div class="playlist-container">
+            <!-- Single column table structure -->
+            {% for full_path, song_name in files %}
+            <div class="playlist-row">
+              <div class="playlist-cell">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="{{ full_path }}" id="{{ full_path }}">
+                  <label class="form-check-label" for="{{ full_path }}">
                     {{ song_name }}
-                </label>
+                  </label>
+                </div>
+              </div>
             </div>
-        {% endfor %}
-        <button type="submit" class="btn btn-primary mt-3">Create Playlist</button>
+            {% endfor %}
+        </div>
     </form>
     <script>
         $(document).ready(function() {
+            // Search functionality
+            $("#searchBox").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $(".playlist-row").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+
+            // Playlist form submission
             $('#playlistForm').submit(function(event) {
                 event.preventDefault();
                 var selectedSongs = [];
